@@ -4,7 +4,6 @@ set -ouex pipefail
 
 ARCH="$(rpm -E %{_arch})"
 RELEASE="$(rpm -E %fedora)"
-
 pushd /tmp/rpms/kernel
 KERNEL_VERSION=$(find kernel-*.rpm | grep -P "kernel-(\d+\.\d+\.\d+)-.*\.fc${RELEASE}\.${ARCH}" | sed -E 's/kernel-//' | sed -E 's/\.rpm//')
 popd
@@ -24,7 +23,6 @@ fi
 # enable ublue-os repos
 dnf -y install dnf5-plugins
 dnf -y copr enable ublue-os/packages
-dnf -y copr enable ublue-os/ucore
 
 # always disable cisco-open264 repo
 sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora-cisco-openh264.repo
@@ -55,7 +53,7 @@ else
         /tmp/rpms/kernel/kernel-modules-*.rpm
 fi
 
-## CONDITIONAL: install ZFS (and sanoid deps)
+## CONDITIONAL: install ZFS
 if [[ "-zfs" == "${ZFS_TAG}" ]]; then
     dnf -y install pv /tmp/rpms/akmods-zfs/kmods/zfs/*.rpm /tmp/rpms/akmods-zfs/kmods/zfs/other/zfs-dracut-*.rpm
     # for some reason depmod ran automatically with zfs 2.1 but not with 2.2
@@ -65,7 +63,7 @@ fi
 ## CONDITIONAL: install NVIDIA
 if [[ "-nvidia" == "${NVIDIA_TAG}" ]]; then
     # repo for nvidia rpms
-    curl --fail --retry 15 --retry-all-errors -sSL https://negativo17.org/repos/fedora-nvidia.repo -o /etc/yum.repos.d/fedora-nvidia.repo
+    curl -L https://negativo17.org/repos/fedora-nvidia.repo -o /etc/yum.repos.d/fedora-nvidia.repo
 
     dnf -y install /tmp/rpms/akmods-nvidia/ucore/ublue-os-ucore-nvidia*.rpm
     sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo
@@ -75,17 +73,3 @@ if [[ "-nvidia" == "${NVIDIA_TAG}" ]]; then
         nvidia-driver-cuda \
         nvidia-container-toolkit
 fi
-
-## ALWAYS: install regular packages
-
-# add tailscale repo
-curl --fail --retry 15 --retry-all-errors -sSL https://pkgs.tailscale.com/stable/fedora/tailscale.repo -o /etc/yum.repos.d/tailscale.repo
-
-# install packages.json stuffs
-export IMAGE_NAME=ucore-minimal
-/ctx/packages.sh
-
-# tweak os-release
-sed -i '/^PRETTY_NAME/s/"$/ (uCore minimal)"/' /usr/lib/os-release
-sed -i 's|^VARIANT_ID=.*|VARIANT_ID=ucore|' /usr/lib/os-release
-sed -i 's|^VARIANT=.*|VARIANT="uCore"|' /usr/lib/os-release
