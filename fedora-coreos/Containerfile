@@ -16,8 +16,6 @@ COPY / /
 FROM quay.io/fedora/fedora-coreos:${IMAGE_VERSION}
 
 ARG COREOS_VERSION="${COREOS_VERSION:-stable}"
-# build with --build-arg NVIDA_TAG="-nvidia" to install nvidia
-ARG NVIDIA_TAG="${NVIDIA_TAG}"
 # build with --build-arg ZFS_TAG="-zfs" to install zfs
 ARG ZFS_TAG="${ZFS_TAG}"
 
