@@ -35,9 +35,6 @@ Please take a look at the included modifications, and help us improve uCore if t
     - [NFS](#nfs)
     - [Samba](#samba)
   - [SecureBoot w/ kmods](#secureboot-w-kmods)
-  - [NVIDIA](#nvidia)
-    - [Included Drivers](#included-drivers)
-    - [Other Drivers](#other-drivers)
   - [ZFS](#zfs)
     - [ZFS and immutable root filesystem](#zfs-and-immutable-root-filesystem)
     - [Sanoid/Syncoid](#sanoidsyncoid)
@@ -85,7 +82,6 @@ The [tag matrix](#tag-matrix) includes combinations of the following:
 
 - `stable` - for an image based on the Fedora CoreOS stable stream
 - `testing` - for an image based on the Fedora CoreOS testing stream
-- `nvidia` - for an image which includes nvidia driver and container runtime
 - `zfs` - for an image which includes zfs driver and tools
 
 ### Images
@@ -96,11 +92,6 @@ The [tag matrix](#tag-matrix) includes combinations of the following:
 > This was previously named `fedora-coreos-zfs`, but that version of the image did not offer the nvidia option. If on the previous image name, please rebase with `rpm-ostree rebase`.
 
 A generic [Fedora CoreOS image](https://quay.io/repository/fedora/fedora-coreos?tab=tags) image with choice of add-on kernel modules:
-
-- [nvidia versions](#tag-matrix) add:
-  - [nvidia driver](https://github.com/ublue-os/akmods) - latest driver built from negativo17's akmod package
-  - [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/sample-workload.html) - latest toolkit which supports both root and rootless podman containers and CDI
-  - [nvidia container selinux policy](https://github.com/NVIDIA/dgx-selinux/tree/master/src/nvidia-container-selinux) - allows using `--security-opt label=type:nvidia_container_t` for some jobs (some will still need `--security-opt label=disable` as suggested by nvidia)
 - [ZFS versions](#tag-matrix) add:
   - [ZFS driver](https://github.com/ublue-os/akmods) - latest driver (currently pinned to 2.2.x series)
 
@@ -122,17 +113,13 @@ Suitable for running containerized workloads on either bare metal or virtual mac
   - [tailscale](https://tailscale.com) and [wireguard-tools](https://www.wireguard.com)
   - [tmux](https://github.com/tmux/tmux/wiki/Getting-Started)
   - udev rules enabling full functionality on some [Realtek 2.5Gbit USB Ethernet](https://github.com/wget/realtek-r8152-linux/) devices
-- Optional [nvidia versions](#tag-matrix) add:
-  - [nvidia driver](https://github.com/ublue-os/ucore-kmods) - latest driver built from negativo17's akmod package
-  - [nvidia-container-toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/sample-workload.html) - latest toolkit which supports both root and rootless podman containers and CDI
-  - [nvidia container selinux policy](https://github.com/NVIDIA/dgx-selinux/tree/master/src/nvidia-container-selinux) - allows using `--security-opt label=type:nvidia_container_t` for some jobs (some will still need `--security-opt label=disable` as suggested by nvidia)
 - Optional [ZFS versions](#tag-matrix) add:
   - [ZFS driver](https://github.com/ublue-os/ucore-kmods) - latest driver (currently pinned to 2.2.x series) - [see below](#zfs) for details
   - `pv` is installed with zfs as a complementary tool
 - Disables Zincati auto upgrade/reboot service
 - Enables staging of automatic system updates via rpm-ostreed
 - Enables password based SSH auth (required for locally running cockpit web interface)
-- Provides public key allowing [SecureBoot](#secureboot) (for ucore signed `nvidia` or `zfs` drivers)
+- Provides public key allowing [SecureBoot](#secureboot) (for ucore signed `zfs` drivers)
 
 > [!IMPORTANT]
 > Per [cockpit's instructions](https://cockpit-project.org/running.html#coreos) the cockpit-ws RPM is **not** installed, rather it is provided as a pre-defined systemd service which runs a podman container.
@@ -176,14 +163,14 @@ Hyper-Coverged Infrastructure(HCI) refers to storage and hypervisor in one place
 
 | IMAGE | TAG |
 |-|-|
-| [`fedora-coreos`](#fedora-coreos) - *stable* | `stable-nvidia`, `stable-zfs`,`stable-nvidia-zfs` |
-| [`fedora-coreos`](#fedora-coreos) - *testing* | `testing-nvidia`, `testing-zfs`, `testing-nvidia-zfs` |
-| [`ucore-minimal`](#ucore-minimal) - *stable* | `stable`, `stable-nvidia`, `stable-zfs`,`stable-nvidia-zfs` |
-| [`ucore-minimal`](#ucore-minimal) - *testing* | `testing`, `testing-nvidia`, `testing-zfs`, `testing-nvidia-zfs` |
-| [`ucore`](#ucore) - *stable* | `stable`, `stable-nvidia`, `stable-zfs`,`stable-nvidia-zfs` |
-| [`ucore`](#ucore) - *testing* | `testing`, `testing-nvidia`, `testing-zfs`, `testing-nvidia-zfs` |
-| [`ucore-hci`](#ucore-hci) - *stable* | `stable`, `stable-nvidia`, `stable-zfs`,`stable-nvidia-zfs` |
-| [`ucore-hci`](#ucore-hci) - *testing* | `testing`, `testing-nvidia`, `testing-zfs`, `testing-nvidia-zfs` |
+| [`fedora-coreos`](#fedora-coreos) - *stable* | `stable-zfs` |
+| [`fedora-coreos`](#fedora-coreos) - *testing* | `testing-zfs` |
+| [`ucore-minimal`](#ucore-minimal) - *stable* | `stable`, `stable-zfs` |
+| [`ucore-minimal`](#ucore-minimal) - *testing* | `testing`, `testing-zfs` |
+| [`ucore`](#ucore) - *stable* | `stable`, `stable-zfs` |
+| [`ucore`](#ucore) - *testing* | `testing`, `testing-zfs` |
+| [`ucore-hci`](#ucore-hci) - *stable* | `stable`, `stable-zfs` |
+| [`ucore-hci`](#ucore-hci) - *testing* | `testing`, `testing-zfs` |
 
 ## Installation
 
@@ -485,7 +472,7 @@ sudo systemctl status smb.service
 
 ### SecureBoot w/ kmods
 
-For those wishing to use `nvidia` or `zfs` images with pre-built kmods AND run SecureBoot, the kernel will not load those kmods until the public signing key has been imported as a MOK (Machine-Owner Key).
+For those wishing to use `zfs` images with pre-built kmods AND run SecureBoot, the kernel will not load those kmods until the public signing key has been imported as a MOK (Machine-Owner Key).
 
 Do so like this:
 
@@ -494,22 +481,6 @@ sudo mokutil --import /etc/pki/akmods/certs/akmods-ublue.der
 ```
 
 The utility will prompt for a password. The password will be used to verify this key is the one you meant to import, after rebooting and entering the UEFI MOK import utility.
-
-### NVIDIA
-
-#### Included Drivers
-
-If you installed an image with `-nvidia` in the tag, the nvidia kernel module, basic CUDA libraries, and the nvidia-container-toolkit are all are pre-installed.
-
-Note, this does NOT add desktop graphics services to your images, but it DOES enable your compatible nvidia GPU to be used for nvdec, nvenc, CUDA, etc. Since this is CoreOS and it's primarily intended for container workloads the [nvidia container toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/index.html) should be well understood.
-
-The included driver is the [latest nvidia driver](https://github.com/negativo17/nvidia-driver/blob/master/nvidia-driver.spec) as bundled by [negativo17](https://negativo17.org/nvidia-driver/). This package was chosen over rpmfusion's due to it's granular packages which allow us to install just the minimal `nvidia-driver-cuda` packages.
-
-#### Other Drivers
-
-If you need an older (or different) driver, consider looking at the [container-toolkit-fcos driver](https://hub.docker.com/r/fifofonix/driver/). It provides pre-bundled container images with nvidia drivers for FCOS, allowing auto-build/loading of the nvidia driver IN podman, at boot, via a systemd service.
-
-If going this path, you likely won't want to use the `ucore` `-nvidia` image, but would use the suggested systemd service. The nvidia container toolkit will still be required but can by layered easily.
 
 ### ZFS
 

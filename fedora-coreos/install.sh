@@ -59,17 +59,3 @@ if [[ "-zfs" == "${ZFS_TAG}" ]]; then
     # for some reason depmod ran automatically with zfs 2.1 but not with 2.2
     depmod -a -v ${KERNEL_VERSION}
 fi
-
-## CONDITIONAL: install NVIDIA
-if [[ "-nvidia" == "${NVIDIA_TAG}" ]]; then
-    # repo for nvidia rpms
-    curl -L https://negativo17.org/repos/fedora-nvidia.repo -o /etc/yum.repos.d/fedora-nvidia.repo
-
-    dnf -y install /tmp/rpms/akmods-nvidia/ucore/ublue-os-ucore-nvidia*.rpm
-    sed -i '0,/enabled=0/{s/enabled=0/enabled=1/}' /etc/yum.repos.d/nvidia-container-toolkit.repo
-
-    dnf -y install \
-        /tmp/rpms/akmods-nvidia/kmods/kmod-nvidia*.rpm \
-        nvidia-driver-cuda \
-        nvidia-container-toolkit
-fi
