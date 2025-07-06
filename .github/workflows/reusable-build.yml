@@ -85,7 +85,7 @@ jobs:
           echo "${{ steps.fetch.outputs.outputs }}"
 
   build_fcos:
-    name: fedora-coreos
+    name: zfc
     runs-on: ubuntu-24.04
     if: always() && !cancelled()
     needs: [workflow_info, stream_info]
@@ -95,7 +95,7 @@ jobs:
       id-token: write
     env:
       FEDORA_VERSION: ${{ needs.stream_info.outputs.fedora}}
-      IMAGE_NAME: fedora-coreos
+      IMAGE_NAME: zfc
       IMAGE_VERSION: ${{ needs.stream_info.outputs.image}}
       KERNEL_FLAVOR: coreos-${{ inputs.coreos_version }}
       KERNEL_VERSION: ${{ needs.stream_info.outputs.kernel}}
@@ -216,8 +216,8 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: |
-            ./fedora-coreos/Containerfile
-          context: ./fedora-coreos
+            ./build/Containerfile
+          context: ./build
           image: ${{ env.IMAGE_NAME }}
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
