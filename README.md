@@ -1,9 +1,9 @@
-# uCore <!-- omit in toc -->
+# Project ZFC <!-- omit in toc -->
 
 [![stable](https://github.com/ublue-os/ucore/actions/workflows/build-stable.yml/badge.svg)](https://github.com/ublue-os/ucore/actions/workflows/build-stable.yml)
 [![testing](https://github.com/ublue-os/ucore/actions/workflows/build-testing.yml/badge.svg)](https://github.com/ublue-os/ucore/actions/workflows/build-testing.yml)
 
-uCore is an OCI image of [Fedora CoreOS](https://getfedora.org/coreos/) with "batteries included". More specifically, it's an opinionated, custom CoreOS image, built daily with some common tools added in. The idea is to make a lightweight server image including commonly used services or the building blocks to host them.
+ZFC is an OCI image of [Fedora CoreOS](https://getfedora.org/coreos/) with ZFS. That's literally all it is. 
 
 Please take a look at the included modifications, and help us improve uCore if the project interests you.
 
