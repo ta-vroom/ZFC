@@ -1,4 +1,4 @@
-name: stable
+name: 🟢 Stable
 on:
   merge_group:
   pull_request:
@@ -12,6 +12,7 @@ on:
 
 jobs:
   build-stable:
+    name: "Build Stable"
     uses: ./.github/workflows/reusable-build.yml
     secrets: inherit
     with:
