@@ -1,4 +1,4 @@
-name: build-ucore
+name: 👷 Build Project
 on:
   workflow_call:
     inputs:
@@ -83,6 +83,7 @@ jobs:
       - name: Echo outputs
         run: |
           echo "${{ steps.fetch.outputs.outputs }}"
+              - name: Echo outputs
 
   build_fcos:
     name: zfc
