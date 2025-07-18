@@ -32,7 +32,6 @@ sed -i 's@enabled=1@enabled=0@g' /etc/yum.repos.d/fedora-cisco-openh264.repo
 find /tmp/rpms/
 
 dnf -y install /tmp/rpms/akmods-common/ublue-os-ucore-addons*.rpm
-dnf -y install ublue-os-signing
 
 # Handle Kernel Skew with override replace
 if [[ "${KERNEL_VERSION}" == "${QUALIFIED_KERNEL}" ]]; then
